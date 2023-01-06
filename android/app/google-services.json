@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "696359566510",
+    "project_id": "simpleinsta",
+    "storage_bucket": "simpleinsta.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:696359566510:android:c54d97d28cec5a7865c13f",
+        "android_client_info": {
+          "package_name": "com.example.instaclone"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "696359566510-j5h2avvr04hpv2nk38vjb1fiego61i7d.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBpvLmKR-PRCV5HLJjoIqinClLSBddTxhU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "696359566510-j5h2avvr04hpv2nk38vjb1fiego61i7d.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
