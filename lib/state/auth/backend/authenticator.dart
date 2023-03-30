@@ -6,6 +6,7 @@ import 'package:instaclone/state/auth/models/auth_result.dart';
 import 'package:instaclone/state/posts/typedefs/user_id.dart';
 
 class Authenticator {
+  const Authenticator();
   UserId? get userId => FirebaseAuth.instance.currentUser?.uid;
 
   bool get isAlreadyLoggedIn => userId != null;
@@ -37,8 +38,9 @@ class Authenticator {
       if (e.code == Constants.accountExistsWithDifferentCredential &&
           email != null &&
           credential != null) {
-        final providers = await FirebaseAuth.instance.fetchSignInMethodsForEmail(email);
-        if(providers.contains(Constants.googleCom)) {
+        final providers =
+            await FirebaseAuth.instance.fetchSignInMethodsForEmail(email);
+        if (providers.contains(Constants.googleCom)) {
           await loginWithGoogle();
           FirebaseAuth.instance.currentUser?.linkWithCredential(credential);
         }
@@ -48,18 +50,15 @@ class Authenticator {
   }
 
   Future<AuthResult> loginWithGoogle() async {
-    final GoogleSignIn googleSignIn = GoogleSignIn(
-      scopes: [Constants.emailScope]
-    );
+    final GoogleSignIn googleSignIn =
+        GoogleSignIn(scopes: [Constants.emailScope]);
     final signInAccount = await googleSignIn.signIn();
-    if(signInAccount == null) {
+    if (signInAccount == null) {
       return AuthResult.aborted;
     }
     final googleAuth = await signInAccount.authentication;
     final oauthCredentials = GoogleAuthProvider.credential(
-      accessToken: googleAuth.accessToken,
-      idToken: googleAuth.idToken
-    );
+        accessToken: googleAuth.accessToken, idToken: googleAuth.idToken);
     try {
       await FirebaseAuth.instance.signInWithCredential(oauthCredentials);
       return AuthResult.success;
