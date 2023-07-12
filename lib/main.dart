@@ -1,19 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:instaclone/state/auth/backend/authenticator.dart';
+import 'package:instaclone/state/auth/providers/auth_state_provider.dart';
+import 'package:instaclone/state/auth/providers/is_logged_in_provider.dart';
+import 'package:instaclone/state/providers/is_loading_provider.dart';
+import 'package:instaclone/views/components/loading/loading_screen.dart';
+import 'package:instaclone/views/login/login_view.dart';
 import 'firebase_options.dart';
-import 'package:encrypt/encrypt.dart' as encrypt;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const MyApp());
+  runApp(const ProviderScope(child: App()));
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+class App extends StatelessWidget {
+  const App({Key? key}) : super(key: key);
 
   // This widget is the root of your application.
   @override
@@ -27,37 +32,46 @@ class MyApp extends StatelessWidget {
         indicatorColor: Colors.blueGrey,
       ),
       debugShowCheckedModeBanner: false,
-      home: const HomePage(),
+      home: Consumer(
+        builder: (context, ref, child) {
+          // install the loading screen
+          ref.listen(isLoadingProvider, (_, isLoading) {
+            if (isLoading) {
+              LoadingScreen.instance().show(context: context);
+            } else {
+              LoadingScreen.instance().hide();
+            }
+          });
+          final isLoggedIn = ref.watch(isLoggedInProvider);
+          if (isLoggedIn) {
+            return const MainView();
+          } else {
+            return const LoginView();
+          }
+        },
+      ),
     );
   }
 }
 
-class HomePage extends StatelessWidget {
-  const HomePage({Key? key}) : super(key: key);
+class MainView extends StatelessWidget {
+  const MainView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Home Page'),
+        title: const Text('Main View'),
       ),
-      body: Column(
-        children: [
-          TextButton(
+      body: Consumer(
+        builder: (context, ref, child) {
+          return TextButton(
             onPressed: () async {
-              final res = await Authenticator().loginWithGoogle();
-              print(res);
+              await ref.read(authStateProvider.notifier).logOut();
             },
-            child: const Text('Sign In with Google'),
-          ),
-          TextButton(
-            onPressed: () async {
-              final res = await Authenticator().loginWithFB();
-              print(res);
-            },
-            child: const Text('Sign In with Facebook'),
-          )
-        ],
+            child: const Text('Logout'),
+          );
+        },
       ),
     );
   }
